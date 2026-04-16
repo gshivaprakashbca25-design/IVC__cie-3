@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineHub - Movie Information Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #e50914;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e50914;
+            text-decoration: none;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px #e50914;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            background: #e50914;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-buttons button:hover {
+            background: #c40812;
+            transform: translateY(-2px);
+        }
+
+        #toggleFiltersBtn {
+            background: #1f8ef1;
+            color: #fff;
+        }
+
+        #toggleFiltersBtn:hover {
+            background: #1876c8;
+        }
+
+        .filter-panel {
+            display: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-panel select {
+            margin-right: 0.75rem;
+            margin-bottom: 0.5rem;
+            width: calc(50% - 0.5rem);
+        }
+
+        .filter-panel button {
+            background: #e50914;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 0.65rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s ease;
+        }
+
+        .filter-panel button:hover {
+            background: #c40812;
+        }
+
+        .cart-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(229, 9, 20, 0.4);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .payment-form {
+            margin-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 1rem;
+        }
+
+        .payment-form input,
+        .payment-form button {
+            width: 100%;
+            margin-bottom: 0.7rem;
+            padding: 0.7rem;
+            border-radius: 5px;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .payment-form input {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .payment-form button {
+            background: #00b894;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .payment-form button:hover {
+            background: #01997f;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #e50914;
+            border-bottom: 2px solid #e50914;
+            padding-bottom: 0.5rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filters select {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filters select:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 280px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            padding: 1rem;
+        }
+
+        .movie-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            font-size: 0.95rem;
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .rating {
+            background: #e50914;
+            padding: 0.3rem 0.6rem;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-cart-btn {
+            background: #e50914;
+            color: #fff;
+        }
+
+        .add-cart-btn:hover {
+            background: #c40812;
+        }
+
+        .buy-now-btn {
+            background: #00b894;
+            color: #fff;
+        }
+
+        .buy-now-btn:hover {
+            background: #01997f;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f0c29, #302b63);
+            max-width: 900px;
+            margin: 2rem auto;
+            border-radius: 10px;
+            border: 1px solid #e50914;
+            padding: 2rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #e50914;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        .modal-body {
+            clear: both;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .modal-poster {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .modal-poster img {
+            width: 100%;
+            height: auto;
+        }
+
+        .modal-details h2 {
+            color: #e50914;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .detail-row {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .detail-label {
+            color: #e50914;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+
+        .rating-section {
+            background: rgba(229, 9, 20, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+
+        .star {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #e50914;
+            transform: scale(1.2);
+        }
+
+        .reviews {
+            margin-top: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .review {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            border-left: 3px solid #e50914;
+        }
+
+        .review-author {
+            font-weight: bold;
+            color: #e50914;
+            margin-bottom: 0.3rem;
+        }
+
+        .review-rating {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #e50914;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .modal-body {
+                grid-template-columns: 1fr;
+            }
+
+            .search-bar {
+                max-width: 100%;
+            }
+
+            .nav-buttons {
+                width: 100%;
+            }
+
+            .nav-buttons button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">🎬 CineHub</a>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search movies...">
+                </div>
+                <div class="nav-buttons">
+                    <button onclick="showSection('trending')">Trending</button>
+                    <button onclick="showSection('toprated')">Top Rated</button>
+                    <button onclick="toggleFilters()" id="toggleFiltersBtn">Filters</button>
+                    <button id="cartButton" onclick="showSection('cart')">Cart (0)</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="filter-panel" id="homeFilterPanel" style="display: none;">
+            <select id="homeGenreFilter">
+                <option value="">All Genres</option>
+                <option value="28">Action</option>
+                <option value="35">Comedy</option>
+                <option value="18">Drama</option>
+                <option value="27">Horror</option>
+                <option value="878">Sci-Fi</option>
+            </select>
+            <select id="homeYearFilter">
+                <option value="">All Years</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+            </select>
+            <button onclick="applyHomeFilters()">Apply</button>
+        </div>
+
+        <!-- Trending Section -->
+        <section id="trendingSection">
+            <h2 class="section-title">🔥 Trending Now</h2>
+            <div class="movies-grid" id="trendingMovies"></div>
+        </section>
+
+        <!-- Top Rated Section -->
+        <section id="topratedSection" style="display: none;">
+            <h2 class="section-title">⭐ Top Rated Movies</h2>
+            <div class="filters">
+                <select id="genreFilter">
+                    <option value="">All Genres</option>
+                    <option value="28">Action</option>
+                    <option value="35">Comedy</option>
+                    <option value="18">Drama</option>
+                    <option value="27">Horror</option>
+                    <option value="878">Sci-Fi</option>
+                </select>
+                <select id="yearFilter">
+                    <option value="">All Years</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                </select>
+                <button onclick="applyFilters()" style="padding: 0.8rem 1.5rem; border: none; border-radius: 5px; background: #e50914; color: #fff; cursor: pointer; font-weight: bold; transition: all 0.3s ease;" onmouseover="this.style.background='#c40812'" onmouseout="this.style.background='#e50914'">Apply Filters</button>
+            </div>
+            <div class="movies-grid" id="topratedMovies"></div>
+        </section>
+
+        <!-- Search Results Section -->
+        <section id="searchSection" style="display: none;">
+            <h2 class="section-title">Search Results</h2>
+            <div class="movies-grid" id="searchResults"></div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cartSection" style="display: none;">
+            <h2 class="section-title">🛒 Your Cart</h2>
+            <div class="cart-section" id="cartItemsContainer"></div>
+            <button style="margin-top:1rem; width:100%; background:#00b894; color:#fff; border:none; border-radius:6px; padding:0.8rem; cursor:pointer; font-weight:bold;" onclick="showSection('payment')">Proceed to Payment</button>
+        </section>
+
+        <!-- Payment Page Section -->
+        <section id="paymentSection" style="display: none;">
+            <h2 class="section-title">💳 Payment Page</h2>
+            <div class="cart-section">
+                <div id="paymentSummary"></div>
+                <div class="payment-form" style="display: block; margin-top: 1rem;">
+                    <p style="color: rgba(255,255,255,0.8);">Send payment to UPI ID: <strong>8310393741@slc</strong></p>
+                    <input type="text" id="paymentPayerName" placeholder="Your Name">
+                    <input type="tel" id="paymentPayerPhone" placeholder="Phone Number (optional)">
+                    <input type="text" id="paymentTxnId" placeholder="Transaction ID / Reference">
+                    <button onclick="confirmPayment()">Confirm Buy</button>
+                    <button onclick="showSection('cart')" style="background:#e50914; margin-top:0.5rem;">Back to Cart</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Movie Detail Modal -->
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-body">
+                <div class="modal-poster">
+                    <img id="modalPoster" src="" alt="Movie Poster">
+                </div>
+                <div class="modal-details">
+                    <h2 id="modalTitle"></h2>
+                    <div class="detail-row">
+                        <div class="detail-label">Release Date</div>
+                        <div id="modalDate"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Runtime</div>
+                        <div id="modalRuntime"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Genre</div>
+                        <div id="modalGenre"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Overview</div>
+                        <div id="modalOverview"></div>
+                    </div>
+                    <div class="rating-section">
+                        <div class="detail-label">Rate This Movie</div>
+                        <div class="rating-input">
+                            <div class="stars" id="ratingStars"></div>
+                            <span id="ratingValue">0/10</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="add-cart-btn" onclick="addToCart()">Add to Cart</button>
+                        <button class="buy-now-btn" onclick="buyMovie()">Buy Movie</button>
+                    </div>
+                    <div class="reviews">
+                        <div class="detail-label">Reviews</div>
+                        <div id="reviewsList"></div>
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                            <input type="text" id="reviewAuthor" placeholder="Your name" style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border: none; border-radius: 3px; background: rgba(255, 255, 255, 0.1); color: #fff;">
+                            <textarea id="reviewText" placeholder="Write a review..." style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border: none; border-radius: 3px; background: rgba(255, 255, 255, 0.1); color: #fff; height: 60px; font-family: inherit; resize: none;"></textarea>
+                            <button onclick="addReview()" style="width: 100%; padding: 0.5rem; background: #e50914; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">Add Review</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = '2a5c562817446bde2408cb5146b1e56d'; // Get free key from https://www.themoviedb.org/settings/api
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
+
+        let currentMovieId = null;
+        let currentMovieData = null;
+        let userRatings = JSON.parse(localStorage.getItem('userRatings')) || {};
+        let topRatedMovies = [];
+        let trendingMovies = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTrendingMovies();
+            setupSearch();
+            setupRating();
+            updateCartCount();
+        });
+
+        // Fetch trending movies
+        async function loadTrendingMovies() {
+            try {
+                const response = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Trending movies loaded:', data);
+                trendingMovies = data.results;
+                if (trendingMovies && trendingMovies.length > 0) {
+                    displayMovies(trendingMovies, 'trendingMovies');
+                } else {
+                    throw new Error('No results from API');
+                }
+            } catch (error) {
+                console.error('Error loading trending movies:', error);
+                document.getElementById('trendingMovies').innerHTML = 
+                    '<div class="empty-state">Unable to load movies. API Error: ' + error.message + '<br>Please verify your API key is valid.</div>';
+            }
+        }
+
+        // Load top-rated movies
+        async function loadTopRatedMovies() {
+            try {
+                const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`);
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Top rated movies loaded:', data);
+                topRatedMovies = data.results;
+                if (topRatedMovies && topRatedMovies.length > 0) {
+                    displayMovies(topRatedMovies, 'topratedMovies');
+                } else {
+                    throw new Error('No results from API');
+                }
+            } catch (error) {
+                console.error('Error loading top-rated movies:', error);
+                document.getElementById('topratedMovies').innerHTML = 
+                    '<div class="empty-state">Unable to load movies. API Error: ' + error.message + '<br>Please verify your API key is valid.</div>';
+            }
+        }
+
+        // Setup search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+
+                if (query.length < 2) {
+                    document.getElementById('searchSection').style.display = 'none';
+                    document.getElementById('trendingSection').style.display = 'block';
+                    document.getElementById('topratedSection').style.display = 'none';
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => searchMovies(query), 300);
+            });
+        }
+
+        // Search movies
+        async function searchMovies(query) {
+            try {
+                const response = await fetch(
+                    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
+                );
+                const data = await response.json();
+                
+                document.getElementById('trendingSection').style.display = 'none';
+                document.getElementById('topratedSection').style.display = 'none';
+                document.getElementById('searchSection').style.display = 'block';
+                
+                if (data.results.length === 0) {
+                    document.getElementById('searchResults').innerHTML = 
+                        '<div class="empty-state">No movies found. Try a different search.</div>';
+                } else {
+                    displayMovies(data.results, 'searchResults');
+                }
+            } catch (error) {
+                console.error('Error searching movies:', error);
+            }
+        }
+
+        // Display movies in grid
+        function displayMovies(movies, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            movies.forEach(movie => {
+                const posterUrl = movie.poster_path 
+                    ? `${IMAGE_URL}${movie.poster_path}` 
+                    : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="300"%3E%3Crect fill="%23667eea" width="200" height="300"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="white" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.onclick = () => openMovieDetail(movie.id);
+                
+                card.innerHTML = `
+                    <div class="movie-poster">
+                        <img src="${posterUrl}" alt="${movie.title || movie.name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22300%22%3E%3Crect fill=%22%23667eea%22 width=%22200%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2216%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EImage Error%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="movie-info">
+                        <div class="movie-title">${movie.title || movie.name}</div>
+                        <div class="movie-meta">
+                            <span>${new Date(movie.release_date || '2000-01-01').getFullYear() || 'N/A'}</span>
+                            <span class="rating">${(movie.vote_average || 0).toFixed(1)}</span>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Open movie detail modal
+        async function openMovieDetail(movieId) {
+            currentMovieId = movieId;
+            try {
+                const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`);
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                const movie = await response.json();
+                console.log('Movie details loaded:', movie);
+
+                document.getElementById('modalTitle').textContent = movie.title;
+                document.getElementById('modalDate').textContent = movie.release_date || 'N/A';
+                document.getElementById('modalRuntime').textContent = `${movie.runtime || 'N/A'} minutes`;
+                document.getElementById('modalGenre').textContent = 
+                    (movie.genres && movie.genres.map(g => g.name).join(', ')) || 'N/A';
+                currentMovieData = movie;
+                document.getElementById('modalOverview').textContent = movie.overview || 'No overview available';
+                
+                const posterUrl = movie.poster_path 
+                    ? `${IMAGE_URL}${movie.poster_path}` 
+                    : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect fill="%23667eea" width="300" height="450"/%3E%3C/svg%3E';
+                const posterImg = document.getElementById('modalPoster');
+                posterImg.src = posterUrl;
+                posterImg.onerror = () => {
+                    posterImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect fill="%23667eea" width="300" height="450"/%3E%3Ctext x="50%25" y="50%25" font-size="20" fill="white" text-anchor="middle" dy=".3em"%3EImage Error%3C/text%3E%3C/svg%3E';
+                };
+
+                displayUserRating(movieId);
+                loadMovieReviews(movieId);
+
+                document.getElementById('movieModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading movie details:', error);
+                alert('Error loading movie details: ' + error.message);
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('movieModal').style.display = 'none';
+        }
+
+        // Setup rating system
+        function setupRating() {
+            const starsContainer = document.getElementById('ratingStars');
+            for (let i = 1; i <= 10; i++) {
+                const star = document.createElement('span');
+                star.className = 'star';
+                star.textContent = '★';
+                star.dataset.rating = i;
+                star.onclick = () => submitRating(i);
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Display user rating
+        function displayUserRating(movieId) {
+            const rating = userRatings[movieId] || 0;
+            const stars = document.querySelectorAll('#ratingStars .star');
+            stars.forEach(star => {
+                star.classList.remove('active');
+                if (parseInt(star.dataset.rating) <= rating) {
+                    star.classList.add('active');
+                }
+            });
+            document.getElementById('ratingValue').textContent = rating > 0 ? `${rating}/10` : '0/10';
+        }
+
+        // Submit rating
+        function submitRating(rating) {
+            userRatings[currentMovieId] = rating;
+            localStorage.setItem('userRatings', JSON.stringify(userRatings));
+            displayUserRating(currentMovieId);
+        }
+
+        // Load reviews from TMDB API and local storage
+        async function loadMovieReviews(movieId) {
+            const reviewsList = document.getElementById('reviewsList');
+            let htmlContent = '';
+
+            // Fetch reviews from TMDB API
+            try {
+                const response = await fetch(`${BASE_URL}/movie/${movieId}/reviews?api_key=${API_KEY}`);
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    htmlContent += data.results.map(review => `
+                        <div class="review">
+                            <div class="review-author">${review.author}</div>
+                            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.3rem;">${review.content.substring(0, 150)}...</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading TMDB reviews:', error);
+            }
+
+            // Load saved local reviews
+            const savedReviews = JSON.parse(localStorage.getItem(`reviews_${movieId}`)) || [];
+            if (savedReviews.length > 0) {
+                htmlContent += savedReviews.map(review => `
+                    <div class="review">
+                        <div class="review-author">${review.author}</div>
+                        <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(10 - review.rating)}</div>
+                        <div>${review.text}</div>
+                    </div>
+                `).join('');
+            }
+
+            if (htmlContent === '') {
+                htmlContent = '<div style="color: rgba(255,255,255,0.6);">No reviews yet. Be the first!</div>';
+            }
+
+            reviewsList.innerHTML = htmlContent;
+        }
+
+        // Add a review
+        function addReview() {
+            const author = document.getElementById('reviewAuthor').value.trim();
+            const text = document.getElementById('reviewText').value.trim();
+
+            if (!author || !text) {
+                alert('Please enter your name and review text');
+                return;
+            }
+
+            const savedReviews = JSON.parse(localStorage.getItem(`reviews_${currentMovieId}`)) || [];
+            savedReviews.unshift({
+                author: author,
+                text: text,
+                rating: 5
+            });
+
+            localStorage.setItem(`reviews_${currentMovieId}`, JSON.stringify(savedReviews));
+            document.getElementById('reviewAuthor').value = '';
+            document.getElementById('reviewText').value = '';
+            loadMovieReviews(currentMovieId);
+        }
+
+        // Cart helpers
+        function getCartItems() {
+            return JSON.parse(localStorage.getItem('cartItems')) || [];
+        }
+
+        function setCartItems(items) {
+            localStorage.setItem('cartItems', JSON.stringify(items));
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const cartCount = getCartItems().length;
+            let cartButton = document.getElementById('cartButton');
+            if (!cartButton) {
+                const navButtons = document.querySelector('.nav-buttons');
+                cartButton = document.createElement('button');
+                cartButton.id = 'cartButton';
+                cartButton.onclick = () => showCart();
+                navButtons.appendChild(cartButton);
+            }
+            cartButton.textContent = `Cart (${cartCount})`;
+        }
+
+        function addToCart() {
+            if (!currentMovieData) {
+                alert('Please open a movie first.');
+                return;
+            }
+            const cart = getCartItems();
+            if (!cart.some(item => item.id === currentMovieData.id)) {
+                cart.push({
+                    id: currentMovieData.id,
+                    title: currentMovieData.title || currentMovieData.name,
+                    price: 799
+                });
+                setCartItems(cart);
+                alert(`${currentMovieData.title || currentMovieData.name} added to cart.`);
+            } else {
+                alert('This movie is already in the cart.');
+            }
+        }
+
+        function buyMovie() {
+            if (!currentMovieData) {
+                alert('Please open a movie first.');
+                return;
+            }
+            addToCart();
+            showSection('payment');
+        }
+
+        function showCart() {
+            showSection('cart');
+        }
+
+        // Show section
+        function showSection(section) {
+            document.getElementById('trendingSection').style.display = section === 'trending' ? 'block' : 'none';
+            document.getElementById('topratedSection').style.display = section === 'toprated' ? 'block' : 'none';
+            document.getElementById('searchSection').style.display = 'none';
+            document.getElementById('cartSection').style.display = section === 'cart' ? 'block' : 'none';
+            document.getElementById('paymentSection').style.display = section === 'payment' ? 'block' : 'none';
+
+            if (section === 'toprated') {
+                loadTopRatedMovies();
+            }
+            if (section === 'cart') {
+                renderCartSection();
+            }
+            if (section === 'payment') {
+                renderPaymentSummary();
+            }
+        }
+
+        function toggleFilters() {
+            const panel = document.getElementById('homeFilterPanel');
+            if (!panel) return;
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function applyHomeFilters() {
+            const genreValue = document.getElementById('homeGenreFilter').value;
+            const yearValue = document.getElementById('homeYearFilter').value;
+
+            let activeSection = document.getElementById('topratedSection').style.display === 'block' ? 'toprated' : 'trending';
+            let sourceMovies = activeSection === 'toprated' ? topRatedMovies : trendingMovies;
+            let containerId = activeSection === 'toprated' ? 'topratedMovies' : 'trendingMovies';
+
+            if (!sourceMovies || sourceMovies.length === 0) {
+                document.getElementById(containerId).innerHTML = '<div class="empty-state">No movies to filter yet.</div>';
+                return;
+            }
+
+            const filtered = sourceMovies.filter(movie => {
+                const movieYear = movie.release_date ? new Date(movie.release_date).getFullYear().toString() : '';
+                const matchesYear = !yearValue || movieYear === yearValue;
+                const matchesGenre = !genreValue || (movie.genre_ids && movie.genre_ids.includes(parseInt(genreValue)));
+                return matchesYear && matchesGenre;
+            });
+
+            if (filtered.length === 0) {
+                document.getElementById(containerId).innerHTML = '<div class="empty-state">No movies found with these filters.</div>';
+            } else {
+                displayMovies(filtered, containerId);
+            }
+
+            document.getElementById('trendingSection').style.display = activeSection === 'trending' ? 'block' : 'none';
+            document.getElementById('topratedSection').style.display = activeSection === 'toprated' ? 'block' : 'none';
+            document.getElementById('searchSection').style.display = 'none';
+        }
+
+        function renderPaymentSummary() {
+            const cart = getCartItems();
+            const summary = document.getElementById('paymentSummary');
+            if (!summary) return;
+            if (cart.length === 0) {
+                summary.innerHTML = '<div class="empty-state">No items in cart, please add items first.</div>';
+                return;
+            }
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            summary.innerHTML = `<div><strong>${cart.length} movie(s) in cart</strong></div><div>Total: ₹${total}</div>`;
+        }
+
+        function renderCartSection() {
+            const cart = getCartItems();
+            const container = document.getElementById('cartItemsContainer');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="empty-state">Your cart is empty. Add movies from Trending or Top Rated.</div>';
+                document.getElementById('paymentForm').style.display = 'none';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div>${item.title}</div>
+                    <div>₹${item.price}</div>
+                    <button style="background: rgba(229,9,20,0.8); color:white; border:none; border-radius:4px; padding:0.4rem 0.7rem; cursor:pointer;" onclick="removeFromCart(${item.id})">Remove</button>
+                `;
+                container.appendChild(div);
+            });
+
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'cart-item';
+            totalDiv.style.fontWeight = 'bold';
+            totalDiv.innerHTML = `<div>Total</div><div>₹${total}</div><div></div>`;
+            container.appendChild(totalDiv);
+
+            document.getElementById('paymentForm').style.display = 'block';
+        }
+
+        function removeFromCart(movieId) {
+            let cart = getCartItems();
+            cart = cart.filter(item => item.id !== movieId);
+            setCartItems(cart);
+            renderCartSection();
+            alert('Item removed from cart');
+        }
+
+        function confirmPayment() {
+            const payerName = (document.getElementById('paymentPayerName') || document.getElementById('payerName')).value.trim();
+            const paymentTxn = (document.getElementById('paymentTxnId') || document.getElementById('paymentTxn')).value.trim();
+
+            if (!payerName || !paymentTxn) {
+                alert('Please enter your name and transaction ID to confirm payment.');
+                return;
+            }
+
+            const cart = getCartItems();
+            if (cart.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+
+            localStorage.removeItem('cartItems');
+            updateCartCount();
+            renderCartSection();
+            alert(`Payment successful! Your product will be sent to you within 24 hours.\nThank you, ${payerName}!\nTransaction ID: ${paymentTxn}`);
+            showSection('trending');
+        }
+
+        // Apply filters to movies
+        function applyFilters() {
+            const genreFilter = document.getElementById('genreFilter').value;
+            const yearFilter = document.getElementById('yearFilter').value;
+
+            let filtered = topRatedMovies;
+
+            // Filter by year
+            if (yearFilter) {
+                filtered = filtered.filter(movie => {
+                    const year = movie.release_date ? new Date(movie.release_date).getFullYear().toString() : '';
+                    return year === yearFilter;
+                });
+            }
+
+            // Note: Genre filtering requires genre IDs from the API, which would need additional data fetch
+            // For now, we filter by year only
+
+            if (filtered.length === 0) {
+                document.getElementById('topratedMovies').innerHTML = 
+                    '<div class="empty-state">No movies found with the selected filters.</div>';
+            } else {
+                displayMovies(filtered, 'topratedMovies');
+            }
+        }
+
+        // Close modal on outside click
+        window.onclick = (event) => {
+            const modal = document.getElementById('movieModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
